@@ -9,15 +9,32 @@ function init_open_mailbox(){
 }
 
 function call(){
-    return document.querySelector(".fa-phone").click();
+    if(document.querySelector(".fa-phone") != null){
+        return document.querySelector(".fa-phone").click();
+    }
+    else{
+        return false;
+    }
 }
 
 function open_mark_as_done(){
-    return document.querySelector(".o_Activity_markDoneButton").click();
+    if(document.querySelector(".o_Activity_markDoneButton") != null){
+        return document.querySelector(".o_Activity_markDoneButton").click();
+    }
+    else{
+        alert("Aucune activité planifiée");
+        return false;
+    }
 }
 
 function write_acti_record(acti){
-    return document.querySelector(".o_ActivityMarkDonePopoverContent_feedback").value = acti;
+    let acti_feedback_body = document.querySelector(".o_ActivityMarkDonePopoverContent_feedback");
+    if(acti_feedback_body != null){
+        return acti_feedback_body.value = acti;
+    }
+    else {
+        return false;
+    }
 }
 
 function write_acti_type(acti){
@@ -33,7 +50,21 @@ function open_next_activity(){
 }
 
 function hang_up(){
-    return document.querySelector('[aria-label="End Call"]').click(); 
+    let hang_up_btn = document.querySelector('[aria-label="End Call"]');
+    try{
+        hang_up_btn.click();
+    }
+    catch(error){
+        console.error(error);
+    }
+}
+
+function get_curent_acti(){
+    if(document.querySelector(".o_Activity_summary") != null){
+        let cleaned_current_acti = document.querySelector(".o_Activity_summary").textContent.replace(/”|“/g, '');
+        return cleaned_current_acti;
+    }
+    return "undefined"
 }
 
 function next_opp(){
@@ -100,8 +131,8 @@ const array_acti = ["call 1", "call 2", "call 3"];
 const array_mail = ["email 1", "email 2", "email 3"];
 
 // Activity variables
-let current_acti = document.querySelector(".o_Activity_summary").textContent.replace(/”|“/g, '');
-let next_acti = set_next_activity(array_acti, current_acti);
+let current_acti = get_curent_acti();
+let next_acti = "";
 let next_acti_date = getDate();
 
 engine.activate({ 
@@ -115,7 +146,7 @@ engine.activate({
             trigger: '[aria-label="End Call"]',
             action: () => setTimeout(() => {
                   hang_up();
-                }, 15000)
+                }, 2000)
         },
         {
             // Make sure we can open the mailbox
@@ -123,6 +154,7 @@ engine.activate({
             action: () => init_open_mailbox()
         }, 
         {
+            // Open the mail box
             trigger: ".o_Composer_buttonFullComposer", 
             action: "click"
         },
@@ -132,6 +164,7 @@ engine.activate({
             action: "text", value: get_email_to_send(array_acti, array_mail, current_acti)
         },
         {
+            // Validate the email template
             trigger: "#template_id+ul>li>a",
             action: "click"
         },
@@ -163,17 +196,18 @@ engine.activate({
             action: "text", value: department_acti
         },
         {
+            // Validate activity Type
             trigger: "#activity_type_id+ul>li>a",
             action: "click"
         },
         {
             // Insert Activity Summary
             trigger: "#summary",
-            action: "text", value: next_acti
+            action: "text", value: set_next_activity(array_acti, current_acti)
         },
         {
-            // Insert Activity Summary
-            trigger: '[data-target = "#o_datepicker_7"]',
+            // Planify next activity deadline
+            trigger: '#date_deadline',
             action: "text", value: next_acti_date
         },
         {
