@@ -1,0 +1,17 @@
+{
+    "manifest_version": 2,
+    "name": "CallThemAll",
+    "version": "1.0",
+    "description": "Won't make you on target, but atleast your pipe will be green",
+    "background": {
+      "scripts": ["background.js"],
+      "persistent": false
+    },
+    "permissions": [
+      "activeTab"
+    ],
+    "browser_action": {
+      "default_popup": "popup.html",
+      "default_icon": "icon.png"
+    }
+  }
