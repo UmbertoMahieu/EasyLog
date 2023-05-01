@@ -11,122 +11,126 @@ function execute(selector, error, callback){
 }
     
 function init_open_mailbox(){
-    return execute(".o_ComposerView_button", "no mail box found", el => el.click())
+    return execute(".o_ChatterTopbar_buttonSendMessage", "initiation failed", el => {
+        let open_mail = document.querySelector(".o_ComposerView_button");
+        if (open_mail===null){
+            el.click();
+        }
+    })
 }
     
 function call(){
     return execute(".fa-phone", "no phone number found", el => el.click())
-
 }
     
-    function open_mark_as_done(){
-        if(document.querySelector(".o_ActivityView_markDoneButton") != null){
-            return document.querySelector(".o_ActivityView_markDoneButton").click();
-        }
-        else{
-            alert("Aucune activité planifiée");
-            return false;
-        }
+function open_mark_as_done(){
+    return execute(".o_ActivityView_markDoneButton", "no activity found", el => el.click())
+}
+
+function write_acti_record(acti_record){
+    return execute(".o_ActivityMarkDonePopoverContentView_feedback", "Activity Feedback Failed", el => el.value = acti_record)
+}
+    
+function mark_as_done(){
+    return execute(".o_ActivityMarkDonePopoverContentView_doneButton", "Activity MarkAsDone Failed", el => el.click())
+}
+
+function open_next_activity(){
+    return execute(".o_ChatterTopbar_buttonScheduleActivity", "Open Next Activity Failed", el => el.click())
+}
+
+function hang_up(){
+    return execute('[aria-label="End Call"]', "hang_up Failed", el => el.click())
+}
+
+function get_current_acti(){
+    let activitySelector = document.querySelector(".o_ActivityView_summary")
+    if(activitySelector){
+        cleaned_current_acti = activitySelector.textContent.replace(/”|“/g, '');
+        return activities.find(activity => activity.name == cleaned_current_acti)
     }
-    
-    function write_acti_record(acti){
-        let acti_feedback_body = document.querySelector(".o_ActivityMarkDonePopoverContentView_feedback");
-        if(acti_feedback_body != null){
-            return acti_feedback_body.value = acti;
-        }
-        else {
-            return false;
-        }
+    return "undefined"
+}
+
+function next_opp(){
+    return execute(".o_pager_next", "Coudn't get to next opp", el => el.click())
+}
+
+
+const activities = [
+    {
+        "name": "Call 1",
+        "email_templateFR": "UMBM 1Mail (FR)",
+        "email_templateEN": "UMBM 1Mail (EN)"
+    },
+    {
+        "name": "Call 2",
+        "email_templateFR": "UMBM 2Mail (FR)",
+        "email_templateEN": "UMBM 2Mail (EN)"
+    },
+    {
+        "name": "Call 3",
+        "email_templateFR": "UMBM 3Mail (FR)",
+        "email_templateEN": "UMBM 3Mail (EN)"
+    },
+    {
+        "name": "Call 4",
+        "email_templateFR": "UMBM 4Mail (FR)",
+        "email_templateEN": "UMBM 4Mail (EN)"
+    },
+    {
+        "name": "Call 5",
+        "email_templateFR": "UMBM 5Mail (FR)",
+        "email_templateEN": "UMBM 5Mail (EN)"
     }
+]
+
+function get_email_to_send(){
+    let current_acti = get_current_acti();
+    return current_acti.email_templateFR
+}
     
-    function mark_as_done(){
-        return document.querySelector(".o_ActivityMarkDonePopoverContentView_doneButton").click();
+function set_next_activity(){
+    let activity_to_add = 1
+    let current_acti_id = activities.findIndex(activity => activity == get_current_acti());
+    // if(appId == "website_sales" || appId == "website"){
+    //     number_to_add = 2
+    // }
+    return activities[current_acti_id + activity_to_add].name
+}
+    
+function getDate() {
+    const today = new Date();
+    let daysToAdd = 2;
+
+    if (today.getDay() === 5) {
+    daysToAdd = 7;
     }
-    
-    function open_next_activity(){
-        return document.querySelector(".o_ChatterTopbar_buttonScheduleActivity").click();
+
+    if (today.getDay() === 4) {
+        daysToAdd = 6;
+        }
+
+    const futureDate = new Date(today.getTime() + (daysToAdd * 24 * 60 * 60 * 1000));
+
+    if (futureDate.getDay() === 6) {
+    futureDate.setDate(futureDate.getDate() + 2);
     }
-    
-    function hang_up(){
-        let hang_up_btn = document.querySelector('[aria-label="End Call"]');
-        try{
-            hang_up_btn.click();
-        }
-        catch(error){
-            console.error(error);
-        }
+    if (futureDate.getDay() === 0) {
+    futureDate.setDate(futureDate.getDate() + 1);
     }
+
+    const day = futureDate.getDate().toString().padStart(2, '0');
+    const month = (futureDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = futureDate.getFullYear().toString();
+
+    return `${month}/${day}/${year}`;
+}
     
-    function get_curent_acti(){
-        if(document.querySelector(".o_ActivityView_summary") != null){
-            let cleaned_current_acti = document.querySelector(".o_ActivityView_summary").textContent.replace(/”|“/g, '');
-            return cleaned_current_acti;
-        }
-        return "undefined"
-    }
-    
-    function next_opp(){
-        return document.querySelector(".o_pager_next").click();
-    }
-    
-    function get_email_to_send(array_acti, array_mail, current_acti){
-        for (var i = 0 ; i < array_acti.length ; i++){
-            if (array_acti[i] == current_acti){
-                return array_mail[i];
-            }
-        }
-    }
-    
-    function set_next_activity(array_acti, current_acti){
-        let number_to_add = 1
-        // if(appId == "website_sales" || appId == "website"){
-        //     number_to_add = 2
-        // }
-        
-        for (var i = 0 ; i < array_acti.length ; i++){
-            if (array_acti[i] == current_acti){
-                try{
-                    return next_acti = array_acti[i+number_to_add];
-                } catch (error){
-                    console.error(error);
-                    return false;
-                }
-            }
-        }
-    }
-    
-    function getDate() {
-        const today = new Date();
-        let daysToAdd = 2;
-      
-        if (today.getDay() === 5) {
-          daysToAdd = 7;
-        }
-    
-        if (today.getDay() === 4) {
-            daysToAdd = 6;
-            }
-    
-        const futureDate = new Date(today.getTime() + (daysToAdd * 24 * 60 * 60 * 1000));
-      
-        if (futureDate.getDay() === 6) {
-          futureDate.setDate(futureDate.getDate() + 2);
-        }
-        if (futureDate.getDay() === 0) {
-          futureDate.setDate(futureDate.getDate() + 1);
-        }
-    
-        const day = futureDate.getDate().toString().padStart(2, '0');
-        const month = (futureDate.getMonth() + 1).toString().padStart(2, '0');
-        const year = futureDate.getFullYear().toString();
-      
-        return `${month}/${day}/${year}`;
-      }
-    
-    function extractAppIdFromConsoleLog(logText) {
-      const matches = logText.match(/\*\*app:\s+(\w+)/);
-      return matches ? matches[1] : null;
-    }
+function extractAppIdFromConsoleLog(logText) {
+    const matches = logText.match(/\*\*app:\s+(\w+)/);
+    return matches ? matches[1] : null;
+}
 
     // window.addEventListener('load', () => {
     console.log("webpage loaded");
@@ -153,48 +157,48 @@ function call(){
         var appId = extractAppIdFromConsoleLog(logText);
         
         // Activity variables
-        var current_acti = get_curent_acti();
+        var current_acti = get_current_acti();
         var next_acti_date = getDate();
         var acti_summary = set_next_activity(array_acti, current_acti);
         
         engine.activate({ 
             name: "callthemall", 
             steps: [
-                // {
-                //     // Launch the call
-                //     action: () => call()
-                // }, 
-                // {
-                //     trigger: '[aria-label="End Call"]',
-                //     action: () => setTimeout(() => {
-                //           hang_up();
-                //         }, 2000)
-                // },
-                // {
-                //     // Make sure we can open the mailbox
-                //     // trigger: '[aria-label="Call"]',
-                //     action: () => init_open_mailbox()
-                // }, 
-                // {
-                //     // Open the mail box
-                //     trigger: ".o_ComposerView_buttonFullComposer", 
-                //     action: "click"
-                // },
-                // {
-                //     // Insert the email template that need to be send
-                //     trigger: '#template_id',
-                //     action: "text", value: get_email_to_send(array_acti, array_mail, current_acti)
-                // },
-                // {
-                //     // Validate the email template
-                //     trigger: "#template_id+ul>li>a",
-                //     action: "click"
-                // },
-                // {
-                //     // Send the mail
-                //     trigger: '[name="action_send_mail"]',
-                //     action: "click"
-                // },
+                {
+                    // Launch the call
+                    action: () => call()
+                }, 
+                {
+                    trigger: '[aria-label="End Call"]',
+                    action: () => setTimeout(() => {
+                          hang_up();
+                        }, 2000)
+                },
+                {
+                    // Make sure we can open the mailbox
+                    // trigger: '[aria-label="Call"]',
+                    action: () => init_open_mailbox()
+                }, 
+                {
+                    // Open the mail box
+                    trigger: ".o_ComposerView_buttonFullComposer", 
+                    action: "click"
+                },
+                {
+                    // Insert the email template that need to be send
+                    trigger: '#template_id',
+                    action: "text", value: get_email_to_send(array_acti, array_mail, current_acti)
+                },
+                {
+                    // Validate the email template
+                    trigger: "#template_id+ul>li>a",
+                    action: "click"
+                },
+                {
+                    // Send the mail
+                    trigger: '[name="action_send_mail"]',
+                    action: "click"
+                },
                 {
                     // Open activity report window 
                     action: () => open_mark_as_done()
