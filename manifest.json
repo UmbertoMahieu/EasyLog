@@ -1,17 +1,27 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "CallThemAll",
     "version": "1.0",
     "description": "Won't make you on target, but atleast your pipe will be green",
     "background": {
-      "scripts": ["background.js"],
-      "persistent": false
+      "service_worker": "background.js" 
     },
     "permissions": [
-      "activeTab"
+      "activeTab", "scripting", "tabs"
     ],
-    "browser_action": {
-      "default_popup": "popup.html",
-      "default_icon": "icon.png"
-    }
+    "content_scripts": [
+        {
+            "matches": ["https://*.odoo.com/*"],
+            "js": ["contentScript.js"]
+        }
+    ],
+    "action": {
+      "default_icon": "icon.png",
+      "default_title": "Sales dashboard",
+      "default_popup": "popup.html"
+    },
+    "web_accessible_resources": [{
+      "resources": ["script.js"],
+      "matches": ["https://*.odoo.com/*"]
+    }]
   }
