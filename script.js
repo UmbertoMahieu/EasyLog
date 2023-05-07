@@ -238,9 +238,12 @@ const sendEmail = {
             action: () => init_getLanguage()
         }, 
         {
-            // Make sure we can open the mailbox
-            action: () => init_open_mailbox()
+            trigger: "#lang_id_1", 
+            action: () => get_email_to_send()
         }, 
+        {
+            action: () => init_open_mailbox()
+        },
         {
             // Open the mail box
             trigger: ".o_ComposerView_buttonFullComposer", 
@@ -249,7 +252,10 @@ const sendEmail = {
         {
             // Insert the email template that need to be send
             trigger: '#template_id',
-            action: "text", value: get_email_to_send()
+            action: () => {
+                document.querySelector('#template_id').value = get_email_to_send();
+                document.querySelector('#template_id').click()
+            }
         },
         {
             // Validate the email template
