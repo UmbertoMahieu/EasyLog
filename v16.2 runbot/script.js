@@ -10,12 +10,17 @@ function execute(selector, error, callback){
     }
 }
     
+function init_open_mailbox(){
+    return execute(".o_ChatterTopbar_buttonSendMessage", "initiation failed", el => {
+        let open_mail = document.querySelector(".o_ComposerView_button");
+        if (open_mail===null){
+            el.click();
+        }
+    })
+}
+    
 function call(){
     return execute(".fa-phone", "no phone number found", el => el.click())
-}
-
-function hang_up(){
-    return execute('[aria-label="End Call"]', "hang_up Failed", el => el.click())
 }
     
 function open_mark_as_done(){
@@ -32,6 +37,14 @@ function mark_as_done(){
 
 function open_next_activity(){
     return execute(".o_ChatterTopbar_buttonScheduleActivity", "Open Next Activity Failed", el => el.click())
+}
+
+function hang_up(){
+    return execute('[aria-label="End Call"]', "hang_up Failed", el => el.click())
+}
+
+function next_opp(){
+    return execute(".o_pager_next", "Coudn't get to next opp", el => el.click())
 }
 
 function get_current_acti(){
@@ -51,6 +64,10 @@ function get_current_acti(){
     return false;
 }
 
+function get_email_to_send(){
+    return current_acti.email_templateFR
+}
+    
 function set_next_activity(){
     let activity_to_add = 1
     let current_acti_id = activities.findIndex(activity => activity == current_acti);
@@ -59,33 +76,15 @@ function set_next_activity(){
     // }
     return activities[current_acti_id + activity_to_add].name
 }
+
+function is_last_activity(){
+    if(_.isEqual(current_acti, activities[activities.length - 1]))
+    {
+        return true
+    }
+    return false;
+}
     
-function init_open_mailbox(){
-    return execute(".o_ChatterTopbar_buttonSendMessage", "initiation failed", el => {
-        let open_mail = document.querySelector(".o_ComposerView_button");
-        if (open_mail===null){
-            el.click();
-        }
-    })
-}
-
-function init_getLanguage(){
-    return execute('[name ="lead"]', "Coudn't reach Extra Info Tab", el => el.click())
-}
-
-function getLanguage(){
-    let language = ""
-    execute("#lang_id_1", "Language not found", el => {language = el.value})
-    language = language.split(" ")[0]
-    return language;
-}
-
-function get_email_to_send(){
-    var language = getLanguage()
-    console.log(language)
-    return current_acti[language]
-}
-
 function getDate() {
     const today = new Date();
     let daysToAdd = 2;
@@ -119,54 +118,41 @@ function extractAppIdFromConsoleLog(logText) {
     return matches ? matches[1] : null;
 }
 
-function is_last_activity(){
-    if(_.isEqual(current_acti, activities[activities.length - 1]))
-    {
-        return true
-    }
-    return false;
-}
-
-function next_opp(){
-    return execute(".o_pager_next", "Coudn't get to next opp", el => el.click())
-}
-
 
 // Settings variables
 var record_acti = "na";
-var department_acti = "DS - Call"
+var department_acti = "Call"
 const activities = [
     {
         "name": "Call 1",
-        "French": "UMBM 1Mail (FR)",
-        "English": "UMBM 1Mail (EN)"
+        "email_templateFR": "UMBM 1Mail (FR)",
+        "email_templateEN": "UMBM 1Mail (EN)"
     },
     {
         "name": "Call 2",
-        "French": "UMBM 2Mail (FR)",
-        "English": "UMBM 2Mail (EN)"
+        "email_templateFR": "UMBM 2Mail (FR)",
+        "email_templateEN": "UMBM 2Mail (EN)"
     },
     {
         "name": "Call 3",
-        "French": "UMBM 3Mail (FR)",
-        "English": "UMBM 3Mail (EN)"
+        "email_templateFR": "UMBM 3Mail (FR)",
+        "email_templateEN": "UMBM 3Mail (EN)"
     },
     {
         "name": "Call 4",
-        "French": "UMBM 4Mail (FR)",
-        "English": "UMBM 4Mail (EN)"
+        "email_templateFR": "UMBM 4Mail (FR)",
+        "email_templateEN": "UMBM 4Mail (EN)"
     },
     {
         "name": "Call 5",
-        "French": "UMBM 5Mail (FR)",
-        "English": "UMBM 5Mail (EN)"
+        "email_templateFR": "UMBM 5Mail (FR)",
+        "email_templateEN": "UMBM 5Mail (EN)"
     }
 ]
 
-
 //Apps tried 
-// var logText = document.querySelector("#description p").textContent
-// var appId = extractAppIdFromConsoleLog(logText);
+var logText = document.querySelector("#description p").textContent
+var appId = extractAppIdFromConsoleLog(logText);
 
 // Activity variables
 var current_acti = get_current_acti();
@@ -233,10 +219,6 @@ const makeCall = {
 const sendEmail = { 
     name: "sendEmail", 
     steps: [
-        {
-            // Make sure we can read the language
-            action: () => init_getLanguage()
-        }, 
         {
             // Make sure we can open the mailbox
             action: () => init_open_mailbox()
@@ -316,32 +298,32 @@ const activityPlanifier = {
             action: "click"
         },
         {
-            // Planify next activity deadline
-            trigger: '#date_deadline',
-            action: () => setTimeout(() => {
-                document.querySelector(".modal-content #date_deadline").value = "05/19/2023"
-                document.querySelector(".modal-content #date_deadline").dispatchEvent(new Event("change"))
-                },800)
-        }, 
-        {
             // Insert Activity Summary
             trigger: ".o_input",
             action: () => setTimeout(() => {
                 document.querySelector('#summary').value = set_next_activity();
-                }, 1000)
+                }, 2000)
         },
+        {
+            // Planify next activity deadline
+            trigger: '#date_deadline',
+            action: () => setTimeout(() => {
+                document.querySelector(".modal-content #date_deadline").value = getDate();
+                document.querySelector(".modal-content #date_deadline").dispatchEvent(new Event("change"))
+                },2000)
+        }, 
         {
             // Validate next Activity
             action: () => setTimeout(() => {
                     document.querySelector('[name="action_close_dialog"]').click();
-                }, 1500)
-        } 
-        // {
-        //     // go to Next Opp
-        //     action: () => setTimeout(() => {
-        //             next_opp()
-        //         }, 3200)
-        // }
+                }, 3000)
+        }, 
+        {
+            // go to Next Opp
+            action: () => setTimeout(() => {
+                    next_opp()
+                }, 3200)
+        }
     ]  
 }
 
@@ -350,16 +332,11 @@ const lostOpp = {
     steps: [
         {
             // Launch the call
-            action: () => {document.querySelector('button[data-hotkey="l"]').click()}
+            action: () => {document.querySelector('button[name = "606"]').click()}
         }, 
         {
             trigger: '.modal-content #lost_reason_id',
             action: "text", value: "No answer, not reached"
-        },
-        {
-            // Validate activity Type
-            trigger: ".modal-content #lost_reason_id+ul>li>a",
-            action: "click"
         },
         {
             // Validate activity Type
@@ -372,4 +349,4 @@ const lostOpp = {
     ]  
 }
 
-engine.activate(sendEmail);
+engine.activate(initialization);
