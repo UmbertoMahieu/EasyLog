@@ -1,3 +1,5 @@
+// Functions
+
 function execute(selector, error, callback){
     let el = document.querySelector(selector);
     if(el){
@@ -51,15 +53,31 @@ function get_current_acti(){
     return false;
 }
 
-function set_next_activity(){
-    let activity_to_add = 1
+function set_next_activity(current_acti){
     let current_acti_id = activities.findIndex(activity => activity == current_acti);
-    // if(appId == "website_sales" || appId == "website"){
-    //     number_to_add = 2
-    // }
+    let activity_to_add = 1
+    if(website_check(apps)){
+        activity_to_add = 2
+    }
     return activities[current_acti_id + activity_to_add].name
 }
-    
+
+function extract_Apps() {
+    var log = document.querySelector("#description p").textContent;
+    var matches = log.match(/\*\*app:\s+(.+)/)[1]
+    if (matches) {
+        return matches.split(":");
+    }
+    return null
+}
+
+function website_check(apps){
+    if(apps.length === 1 && (apps[0] === "website_sale" || apps[0] === "website")){
+        return true
+    }
+    return false;
+}
+
 function init_open_mailbox(){
     return execute(".o_ChatterTopbar_buttonSendMessage", "initiation failed", el => {
         let open_mail = document.querySelector(".o_ComposerView_button");
@@ -82,7 +100,6 @@ function getLanguage(){
 
 function get_email_to_send(){
     var language = getLanguage()
-    console.log(language)
     return current_acti[language]
 }
 
@@ -133,6 +150,9 @@ function next_opp(){
 
 
 // Settings variables
+var macro = odoo.__DEBUG__.services["@web/core/macro"]; 
+var engine = new macro.MacroEngine(); 
+
 var record_acti = "na";
 var department_acti = "DS - Call"
 const activities = [
@@ -164,17 +184,14 @@ const activities = [
 ]
 
 
-//Apps tried 
-// var logText = document.querySelector("#description p").textContent
-// var appId = extractAppIdFromConsoleLog(logText);
-
 // Activity variables
 var current_acti = get_current_acti();
 var isLastActivity = is_last_activity();
+var apps = extract_Apps();
 
 
-var macro = odoo.__DEBUG__.services["@web/core/macro"]; 
-var engine = new macro.MacroEngine(); 
+
+// Macro
 
 const initialization = { 
     name: "Initialization", 
@@ -333,7 +350,7 @@ const activityPlanifier = {
             // Insert Activity Summary
             trigger: ".o_input",
             action: () => setTimeout(() => {
-                document.querySelector('#summary').value = set_next_activity();
+                document.querySelector('#summary').value = set_next_activity(current_acti);
                 }, 1000)
         },
         {
