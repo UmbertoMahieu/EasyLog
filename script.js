@@ -54,12 +54,17 @@ function get_current_acti(){
 }
 
 function set_next_activity(current_acti){
+    let apps = extract_Apps();
     let current_acti_id = activities.findIndex(activity => activity == current_acti);
     let activity_to_add = 1
     if(website_check(apps)){
         activity_to_add = 2
     }
     return activities[current_acti_id + activity_to_add].name
+}
+
+function init_extract_Apps(){
+    return execute('[name ="internal_notes"]', "Coudn't reach Internal note Tab", el => el.click());
 }
 
 function extract_Apps() {
@@ -155,7 +160,7 @@ var engine = new macro.MacroEngine();
 
 var record_acti = "na";
 var department_acti = "DS - Call"
-const activities = [
+var activities = [
     {
         "name": "Call 1",
         "French": "UMBM 1Mail (FR)",
@@ -187,13 +192,13 @@ const activities = [
 // Activity variables
 var current_acti = get_current_acti();
 var isLastActivity = is_last_activity();
-var apps = extract_Apps();
+// var apps = extract_Apps();
 
 
 
 // Macro
 
-const initialization = { 
+var initialization = { 
     name: "Initialization", 
     steps: [{ 
         action: () => { 
@@ -219,7 +224,7 @@ const initialization = {
     } ] 
 } 
 
-const makeCall = { 
+var makeCall = { 
     name: "makeCall", 
     steps: [
         {
@@ -247,7 +252,7 @@ const makeCall = {
     ]  
 }
 
-const sendEmail = { 
+var sendEmail = { 
     name: "sendEmail", 
     steps: [
         {
@@ -278,19 +283,19 @@ const sendEmail = {
             // Validate the email template
             trigger: "#template_id+ul>li>a",
             action: "click"
-        },
-        {
-            // Send the mail
-            trigger: '[name="action_send_mail"]',
-            action: "click"
-        },
-        { 
-            action: () => engine.activate(activityManager)
-        } 
+        }
+        // {
+        //     // Send the mail
+        //     trigger: '[name="action_send_mail"]',
+        //     action: "click"
+        // },
+        // { 
+        //     action: () => engine.activate(activityManager)
+        // } 
     ]  
 }
 
-const activityManager = { 
+var activityManager = { 
     name: "activityManager", 
     steps: [
         {
@@ -321,9 +326,13 @@ const activityManager = {
     ]  
 }
 
-const activityPlanifier = { 
+var activityPlanifier = { 
     name: "activityPlanifier", 
     steps: [
+        {
+            // Planify Next Activity. Simply open the window
+            action: () => init_extract_Apps()
+        },
         {
             // Planify Next Activity. Simply open the window
             action: () => open_next_activity()
@@ -368,7 +377,7 @@ const activityPlanifier = {
     ]  
 }
 
-const lostOpp = { 
+var lostOpp = { 
     name: "lostOpp", 
     steps: [
         {
