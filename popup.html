@@ -2,48 +2,118 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>My Popup</title>
-  <script src="popup.js"></script>
+  <title>My Extension Popup</title>
   <style>
     /* Styles for the popup container */
     .popup-container {
-      position: fixed;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      text-align: left;
+      width: 500px;
+      height: 200px;
+    }
+
+    
+
+    /* Styles for the tabs */
+    .tab-container {
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      display: inline-block;
+      margin-right: 10px;
+      padding: 10px 20px;
+      background-color: #eee;
+      border-radius: 5px 5px 0 0;
+      cursor: pointer;
+      position: relative;
+      top: 0;
+      left: 0;
+    }
+
+    .tab.active-tab {
       background-color: #fff;
       border: 1px solid #ccc;
-      border-radius: 10px;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-      padding: 20px;
-      text-align: center;
+      border-bottom: none;
     }
 
-    /* Styles for the "Send it !" button */
-    .send-button {
-      background-color: #00bcd4;
-      border: none;
+    /* Styles for the tab contents */
+    .tab-content {
+      display: none;
+      padding: 20px;
+    }
+
+    .active-tab-content {
+      display: block;
+    }
+
+    /* Styles for the form */
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-top: 20px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .form-field label {
+      width: 100px;
+      margin-right: 10px;
+    }
+
+    .form-field input[type="text"] {
+      width: 200px;
+      padding: 5px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .add-field-btn {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background-color: #1e90ff;
       color: #fff;
       font-size: 16px;
-      padding: 10px 20px;
-      border-radius: 5px;
+      text-align: center;
+      border-radius: 50%;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      margin-left: 5px;
+      transition: all 0.3s ease;
     }
 
-    .send-button:hover {
-      background-color: #008c9e;
+    .add-field-btn:hover {
+      transform: scale(1.1);
     }
-
   </style>
 </head>
 <body>
   <div class="popup-container">
-    <h2>My Popup</h2>
-    <p>Enter your message:</p>
-    <textarea></textarea>
-    <br>
-    <button id="inject-script" class="send-button">Send it !</button>
+    <div class="tab-container">
+      <div class="tab active-tab" id="settings-tab">Settings</div>
+    </div>
+    <div class="tab-content active-tab-content" id="settings-tab-content">
+      <form>
+        <div class="form-field">
+          <label for="activity-name">Activity Name:</label>
+          <input type="text" id="activity-name" name="activity-name">
+          <div class="add-field-btn" id="add-field-btn">+</div>
+        </div>
+      </form>
+    </div>
   </div>
+
 </body>
+<script type="text/javascript" src="popup.js"></script>
+
 </html>
