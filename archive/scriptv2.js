@@ -49,7 +49,7 @@ function get_current_acti(){
             return false;
         }
     }
-    return activities[0];
+    return activities[0].name;
 }
 
 function set_next_activity(current_acti){
@@ -69,14 +69,9 @@ function init_extract_Apps(){
 function extract_Apps() {
     var log = document.querySelector("#description p").textContent;
     if(log !== ''){
-        try{
-            var matches = log.match(/\*\*app:\s+(.+)/)[1]
-            if (matches) {
-                return matches.split(":");
-            }
-        }
-        catch (error) {
-            console.log("Le prospect n'a pas testé d'app")
+        var matches = log.match(/\*\*app:\s+(.+)/)[1]
+        if (matches) {
+            return matches.split(":");
         }
     }
     return null
@@ -168,7 +163,7 @@ var macro = odoo.__DEBUG__.services["@web/core/macro"];
 var engine = new macro.MacroEngine(); 
 
 var record_acti = "na";
-var department_acti = "DS - Call"
+var department_acti = "Call"
 var activities = [
     {
         "name": "Call 1",
@@ -271,6 +266,9 @@ var sendEmail = {
         }, 
         {
             trigger: "#lang_id_1", 
+            action: () => get_email_to_send()
+        }, 
+        {
             action: () => init_open_mailbox()
         },
         {
@@ -301,7 +299,6 @@ var sendEmail = {
         } 
     ]  
 }
-
 
 var activityManager = { 
     name: "activityManager", 
@@ -371,13 +368,13 @@ var setFirstActivity = {
             action: () => setTimeout(() => {
                     document.querySelector('#mail_activity_save').click();
                 }, 1500)
-        }, 
-        {
-            // Validate next Activity
-            action: () => setTimeout(() => {
-                    engine.activate(sendEmail)
-                }, 2000)
-        }
+        } 
+        // {
+        //     // Validate next Activity
+        //     action: () => setTimeout(() => {
+        //             engine.activate(sendEmail)
+        //         }, 2000)
+        // }
     ]  
 }
 
