@@ -355,7 +355,7 @@ var setFirstActivity = {
             // Planify next activity deadline
             trigger: '#date_deadline',
             action: () => setTimeout(() => {
-                document.querySelector(".modal-content #date_deadline").value = "05/19/2023"
+                document.querySelector(".modal-content #date_deadline").value = "06/30/2023"
                 document.querySelector(".modal-content #date_deadline").dispatchEvent(new Event("change"))
                 },800)
         }, 
@@ -406,7 +406,7 @@ var activityPlanifier = {
             // Planify next activity deadline
             trigger: '#date_deadline',
             action: () => setTimeout(() => {
-                document.querySelector(".modal-content #date_deadline").value = "05/19/2023"
+                document.querySelector(".modal-content #date_deadline").value = "06/30/2023"
                 document.querySelector(".modal-content #date_deadline").dispatchEvent(new Event("change"))
                 },800)
         }, 
@@ -414,7 +414,8 @@ var activityPlanifier = {
             // Insert Activity Summary
             trigger: ".o_input",
             action: () => setTimeout(() => {
-                document.querySelector('#summary').value = set_next_activity(current_acti);
+				let todayActiviry = get_current_acti();
+                document.querySelector('#summary').value = set_next_activity(todayActiviry);
                 }, 1000)
         },
         {
@@ -422,13 +423,13 @@ var activityPlanifier = {
             action: () => setTimeout(() => {
                     document.querySelector('[name="action_close_dialog"]').click();
                 }, 1500)
-        } 
-        // {
-        //     // go to Next Opp
-        //     action: () => setTimeout(() => {
-        //             next_opp()
-        //         }, 3200)
-        // }
+        }, 
+        {
+             // go to Next Opp
+             action: () => setTimeout(() => {
+                     next_opp()
+                }, 2000)
+        }
     ]  
 }
 

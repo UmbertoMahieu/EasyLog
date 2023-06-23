@@ -1,14 +1,17 @@
 {
     "manifest_version": 3,
-    "name": "CallThemAll",
+    "name": "CallThemAllDEV",
     "version": "1.0",
     "description": "Won't make you on target, but atleast your pipe will be green",
     "background": {
       "service_worker": "background.js" 
     },
     "permissions": [
-      "activeTab", "scripting", "tabs"
+      "activeTab", "scripting", "tabs", "webRequest"
     ],
+    "host_permissions": [
+	"<all_urls>"
+	],
     "content_scripts": [
         {
             "matches": ["https://*.odoo.com/*"],
