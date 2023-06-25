@@ -11,8 +11,8 @@
     ],
     "content_scripts": [
         {
-            "matches": ["https://*.odoo.com/*"],
-            "js": ["contentScript.js"]
+          "js": ["contentScript.js"],
+          "matches": ["https://*.odoo.com/*"]
         }
     ],
     "action": {
