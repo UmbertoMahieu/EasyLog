@@ -7,6 +7,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Ajout d'une activité sur le forms & du bouton delete
   addActivityButton.addEventListener("click", function() {
+    generateActivityField();
+  });
+
+  // fonction de création d'une activité
+  function generateActivityField(activity = null) {
     var activityRow = document.createElement("div");
     activityRow.classList.add("activity-row");
 
@@ -17,9 +22,10 @@ document.addEventListener("DOMContentLoaded", function() {
     var activityNameInput = document.createElement("input");
     activityNameInput.setAttribute("type", "text");
     activityNameInput.setAttribute("name", "activity-name");
+    activityNameInput.value = activity ? activity[0].name : ""; // Set the value from activity object if available
 
-    var templateContainer1 = createTemplateContainer(1);
-    var templateContainer2 = createTemplateContainer(2);
+    var templateContainer1 = createTemplateContainer(1, activity);
+    var templateContainer2 = createTemplateContainer(2, activity);
 
     activityRow.appendChild(activityNameLabel);
     activityRow.appendChild(activityNameInput);
@@ -38,10 +44,10 @@ document.addEventListener("DOMContentLoaded", function() {
     activityRow.appendChild(removeButton);
 
     activityContainer.appendChild(activityRow);
-  });
+  }
 
   // fonction de création d'une activité et ses emails templates
-  function createTemplateContainer(index) {
+  function createTemplateContainer(index, activity) {
     var templateContainer = document.createElement("div");
     templateContainer.classList.add("template-container");
 
@@ -57,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     for (var i = 0; i < languageOptions.length; i++) {
       var option = document.createElement("option");
-      option.setAttribute("value", languageOptions[i].toLowerCase());
+      option.setAttribute("value", languageOptions[i]);
       option.textContent = languageOptions[i];
       languageSelect.appendChild(option);
     }
@@ -71,6 +77,7 @@ document.addEventListener("DOMContentLoaded", function() {
     contentTextarea.setAttribute("name", "template-content-" + index);
     contentTextarea.setAttribute("rows", "4");
     contentTextarea.setAttribute("cols", "50");
+    contentTextarea.value = activity ? activity[0][languageOptions[index - 1]] : ""; // Set the value from activity object if available
 
     templateContainer.appendChild(languageLabel);
     templateContainer.appendChild(languageSelect);
@@ -111,7 +118,13 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   chrome.storage.local.get(["data"], (result) => {
-    console.log("Storage get :")
-    console.log(result); 
-  })
+    var activities = [result.data]; // Wrap the activities object in an array
+    console.log(activities[0]);
+
+    activities.forEach(function(activity) {
+      generateActivityField(activity);
+    });
+    console.log("Storage get:");
+    console.log(result);
+  });
 });
