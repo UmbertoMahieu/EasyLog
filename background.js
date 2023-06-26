@@ -18,5 +18,12 @@
 	  ['responseHeaders']
 	);
 
+	chrome.runtime.onMessage.addListener(data => {
+		const {event, activities} = data;
+		activity_obj = {};
+		Object.assign(activity_obj, activities)
+		chrome.storage.local.set({"data" : activity_obj});
+		//console.log(activity_obj);
+	})
 
 	console.log("background test")

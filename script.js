@@ -162,6 +162,13 @@ function next_opp(){
     return execute(".o_pager_next", "Coudn't get to next opp", el => el.click())
 }
 
+function formatDate() {
+    let dateString = "";
+    execute("#date_input", "Date not found", el => {dateString = el.value})
+    var parts = dateString.split('-');
+    var formattedDate = parts[1] + '/' + parts[2] + '/' + parts[0];
+    return formattedDate;
+  }
 
 // Settings variables
 var macro = odoo.__DEBUG__.services["@web/core/macro"]; 
@@ -199,6 +206,7 @@ var activities = [
 
 
 // Activity variables
+var next_date = formatDate();
 var current_acti = get_current_acti();
 var isLastActivity = is_last_activity();
 // var apps = extract_Apps();
@@ -355,13 +363,14 @@ var setFirstActivity = {
             // Planify next activity deadline
             trigger: '#date_deadline',
             action: () => setTimeout(() => {
-                document.querySelector(".modal-content #date_deadline").value = "06/30/2023"
+                document.querySelector(".modal-content #date_deadline").value = next_date;
                 document.querySelector(".modal-content #date_deadline").dispatchEvent(new Event("change"))
-                },800)
-        }, 
+            },800)
+        },  
         {
             // Insert Activity Summary
             trigger: ".o_input",
+            //$("#activity_type_id:propValue('demo2')")
             action: () => setTimeout(() => {
                 document.querySelector('#summary').value = activities[0].name;
                 }, 1000)
@@ -371,13 +380,13 @@ var setFirstActivity = {
             action: () => setTimeout(() => {
                     document.querySelector('#mail_activity_save').click();
                 }, 1500)
-        }, 
-        {
-            // Validate next Activity
-            action: () => setTimeout(() => {
-                    engine.activate(sendEmail)
-                }, 2000)
         }
+        // {
+        //     // Validate next Activity
+        //     action: () => setTimeout(() => {
+        //             engine.activate(sendEmail)
+        //         }, 2000)
+        // }
     ]  
 }
 
@@ -406,7 +415,7 @@ var activityPlanifier = {
             // Planify next activity deadline
             trigger: '#date_deadline',
             action: () => setTimeout(() => {
-                document.querySelector(".modal-content #date_deadline").value = "06/30/2023"
+                document.querySelector(".modal-content #date_deadline").value = next_date
                 document.querySelector(".modal-content #date_deadline").dispatchEvent(new Event("change"))
                 },800)
         }, 
@@ -414,8 +423,7 @@ var activityPlanifier = {
             // Insert Activity Summary
             trigger: ".o_input",
             action: () => setTimeout(() => {
-				let todayActiviry = get_current_acti();
-                document.querySelector('#summary').value = set_next_activity(todayActiviry);
+                document.querySelector('#summary').value = set_next_activity(current_acti);
                 }, 1000)
         },
         {
@@ -460,4 +468,4 @@ var lostOpp = {
     ]  
 }
 
-engine.activate(initialization);
+engine.activate(activityManager);
