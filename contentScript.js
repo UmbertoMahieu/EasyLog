@@ -1,42 +1,10 @@
-console.log("content loaded");
 
-function addButton() {
 
-    const parentDiv = document.querySelector('.o_statusbar_buttons');
-
-    const sendEmailButton = document.createElement('button');
-    sendEmailButton.setAttribute('class', 'btn btn-secondary');
-    sendEmailButton.setAttribute('name', 'send_email_button');
-    sendEmailButton.setAttribute('type', 'object');	
-    sendEmailButton.setAttribute('data-tooltip', 'Send Email');
-    sendEmailButton.innerHTML = '<span>Send Email & Log Acti</span>';
-
-    const lostButton = document.querySelector('.o_statusbar_buttons button[name="2502"]');
-
-    parentDiv.insertBefore(sendEmailButton, lostButton.nextSibling);
-    
-    sendEmailButton.addEventListener('click', function() {
-		injectScript();
-	});
-}
-
-// Function to inject the script
-function injectScript(){
-        var s = document.createElement('script');
-        s.src = chrome.runtime.getURL('script.js');
-        console.log("scriptinjected")
-
-        s.onload = function() {
-            this.remove();
-        };
-        (document.head || document.documentElement).appendChild(s);
-    }
-
+// Listen to backgroundPage XHR Hookup to create button and datefield inside page
 chrome.runtime.onMessage.addListener(function (msg){
 	if(msg.message == "data" && document.getElementsByName("send_email_button").length == 0){
 			addButton();
             addDateField();
-			console.log(msg);
 		}
 	});
 
@@ -61,9 +29,45 @@ function addDateField() {
     referenceButton.parentNode.insertBefore(dateInput, referenceButton.nextSibling);
 }
 
+// Function that create the button and the listener on it
+function addButton() {
+    const parentDiv = document.querySelector('.o_statusbar_buttons');
 
+    const sendEmailButton = document.createElement('button');
+    sendEmailButton.setAttribute('class', 'btn btn-secondary');
+    sendEmailButton.setAttribute('name', 'send_email_button');
+    sendEmailButton.setAttribute('type', 'object');	
+    sendEmailButton.setAttribute('data-tooltip', 'Send Email');
+    sendEmailButton.innerHTML = '<span>Send Email & Log Acti</span>';
 
+    const lostButton = document.querySelector('.o_statusbar_buttons button[name="2502"]');
 
+    parentDiv.insertBefore(sendEmailButton, lostButton.nextSibling);
+    
+    sendEmailButton.addEventListener('click', function() {
+		injectScript();
+	});
+}
+
+// Function to inject the script
+async function injectScript(){
+        var s = document.createElement('script');
+        s.src = chrome.runtime.getURL('script.js');
+        console.log("scriptinjected")
+
+        const d = document.createElement('div');
+        d.style.display = "none";
+        d.setAttribute("id", "Dre");
+        d.innerText = JSON.stringify(await chrome.storage.local.get(["data"]));
+        
+        
+        s.onload = function() {
+            this.remove();
+        };
+        document.body.appendChild(d);
+
+        (document.head || document.documentElement).appendChild(s);
+    }
 
 
     

@@ -176,34 +176,39 @@ var engine = new macro.MacroEngine();
 
 var record_acti = "na";
 var department_acti = "DS - Call"
-var activities = [
-    {
-        "name": "Call 1",
-        "French": "UMBM 1Mail (FR)",
-        "English": "UMBM 1Mail (EN)"
-    },
-    {
-        "name": "Call 2",
-        "French": "UMBM 2Mail (FR)",
-        "English": "UMBM 2Mail (EN)"
-    },
-    {
-        "name": "Call 3",
-        "French": "UMBM 3Mail (FR)",
-        "English": "UMBM 3Mail (EN)"
-    },
-    {
-        "name": "Call 4",
-        "French": "UMBM 4Mail (FR)",
-        "English": "UMBM 4Mail (EN)"
-    },
-    {
-        "name": "Call 5",
-        "French": "UMBM 5Mail (FR)",
-        "English": "UMBM 5Mail (EN)"
-    }
-]
+// var activities = [
+//     {
+//         "name": "Call 1",
+//         "French": "UMBM 1Mail (FR)",
+//         "English": "UMBM 1Mail (EN)"
+//     },
+//     {
+//         "name": "Call 2",
+//         "French": "UMBM 2Mail (FR)",
+//         "English": "UMBM 2Mail (EN)"
+//     },
+//     {
+//         "name": "Call 3",
+//         "French": "UMBM 3Mail (FR)",
+//         "English": "UMBM 3Mail (EN)"
+//     },
+//     {
+//         "name": "Call 4",
+//         "French": "UMBM 4Mail (FR)",
+//         "English": "UMBM 4Mail (EN)"
+//     },
+//     {
+//         "name": "Call 5",
+//         "French": "UMBM 5Mail (FR)",
+//         "English": "UMBM 5Mail (EN)"
+//     }
+// ]
 
+
+
+var activitiesList = JSON.parse(document.getElementById("Dre").innerText).data;
+var activities = Array.from(Object.values(activitiesList));
+console.log(activities);
 
 // Activity variables
 var next_date = formatDate();
@@ -380,13 +385,13 @@ var setFirstActivity = {
             action: () => setTimeout(() => {
                     document.querySelector('#mail_activity_save').click();
                 }, 1500)
-        }
-        // {
-        //     // Validate next Activity
-        //     action: () => setTimeout(() => {
-        //             engine.activate(sendEmail)
-        //         }, 2000)
-        // }
+        },
+        {
+            // Validate next Activity
+            action: () => setTimeout(() => {
+                    engine.activate(sendEmail)
+                }, 2000)
+        },
     ]  
 }
 
@@ -467,5 +472,6 @@ var lostOpp = {
         }
     ]  
 }
+
 
 engine.activate(activityManager);
