@@ -7,11 +7,33 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Ajout d'une activité sur le forms & du bouton delete
   addActivityButton.addEventListener("click", function() {
-    generateActivityField();
+    generateActivityField(null);
   });
 
   // fonction de création d'une activité
   function generateActivityField(activity = null) {
+
+    var firstLanguage = "";
+    var secondLanguage = "";
+    var firstLanguageTemplate = "";
+    var secondLanguageTemplate = "";
+
+    if (activity){
+      Object.keys(activity).forEach(key => {
+        console.log(key, activity[key]);
+        if(key == "English" || key == "French" || key == "Dutch" || key == "Italian"){
+          if(firstLanguage == ""){
+            firstLanguage = key;
+            firstLanguageTemplate = activity[key];
+          }
+          else{
+            secondLanguage = key;
+            secondLanguageTemplate = activity[key];
+          }
+        } 
+      })
+    }
+
     var activityRow = document.createElement("div");
     activityRow.classList.add("activity-row");
 
@@ -22,10 +44,12 @@ document.addEventListener("DOMContentLoaded", function() {
     var activityNameInput = document.createElement("input");
     activityNameInput.setAttribute("type", "text");
     activityNameInput.setAttribute("name", "activity-name");
-    activityNameInput.value = activity ? activity[0].name : ""; // Set the value from activity object if available
+    activityNameInput.value = activity ? activity.name : ""; // Set the value from activity object if available
 
-    var templateContainer1 = createTemplateContainer(1, activity);
-    var templateContainer2 = createTemplateContainer(2, activity);
+    activityContainer.appendChild(activityRow);
+
+    var templateContainer1 = createTemplateContainer(1, firstLanguage, firstLanguageTemplate);
+    var templateContainer2 = createTemplateContainer(2, secondLanguage, secondLanguageTemplate);
 
     activityRow.appendChild(activityNameLabel);
     activityRow.appendChild(activityNameInput);
@@ -42,12 +66,12 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     activityRow.appendChild(removeButton);
-
-    activityContainer.appendChild(activityRow);
   }
 
   // fonction de création d'une activité et ses emails templates
-  function createTemplateContainer(index, activity) {
+  function createTemplateContainer(index, language = null, template = null) {
+
+
     var templateContainer = document.createElement("div");
     templateContainer.classList.add("template-container");
 
@@ -65,6 +89,9 @@ document.addEventListener("DOMContentLoaded", function() {
       var option = document.createElement("option");
       option.setAttribute("value", languageOptions[i]);
       option.textContent = languageOptions[i];
+      if(language && languageOptions[i] == language){
+        option.setAttribute("selected", "selected");
+      }
       languageSelect.appendChild(option);
     }
 
@@ -77,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function() {
     contentTextarea.setAttribute("name", "template-content-" + index);
     contentTextarea.setAttribute("rows", "4");
     contentTextarea.setAttribute("cols", "50");
-    contentTextarea.value = activity ? activity[0][languageOptions[index - 1]] : ""; // Set the value from activity object if available
+    contentTextarea.value = template ? template : ""; // Set the value from activity object if available
 
     templateContainer.appendChild(languageLabel);
     templateContainer.appendChild(languageSelect);
@@ -121,10 +148,17 @@ document.addEventListener("DOMContentLoaded", function() {
     var activities = [result.data]; // Wrap the activities object in an array
     console.log(activities[0]);
 
-    activities.forEach(function(activity) {
+    Object.values(activities[0]).forEach(activity => {
+      // Object.keys(val).forEach(key => {
+      //   console.log(key, val[key]);
+      // })
       generateActivityField(activity);
-    });
-    console.log("Storage get:");
-    console.log(result);
+      console.log(activity);
+    })
+
+      // console.log(activity);
+
+
+
   });
 });
