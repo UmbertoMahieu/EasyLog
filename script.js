@@ -304,10 +304,15 @@ var sendEmail = {
             trigger: "#template_id+ul>li>a",
             action: "click"
         },
+        // {
+        //     // Send the mail
+        //     trigger: '[name="action_send_mail"]',
+        //     action: "click"
+        // },
         {
-            // Send the mail
-            trigger: '[name="action_send_mail"]',
-            action: "click"
+            trigger: () => {
+                return document.querySelector(".modal-header") == null ? document.querySelector('body') : null 
+            },
         },
         { 
             action: () => engine.activate(activityManager)
@@ -473,5 +478,23 @@ var lostOpp = {
     ]  
 }
 
+// var testing = { 
+//     name: "testing", 
+//     steps: [
+//         {
+//             // Launch the call
+//             action: () => console.log("test1")
+//         }, 
+//         {
+//             trigger: () => {
+//                 console.log(document.querySelector(".modal-header") == null ? document.querySelector('body') : "1" );
+//                 return document.querySelector(".modal-header") == null ? document.querySelector('body') : null },
+//         },
+//         {
+//             // go to Next Opp
+//             action: () => console.log("test2")
+//         },
+//     ]  
+// }
 
-engine.activate(activityManager);
+engine.activate(initialization);
