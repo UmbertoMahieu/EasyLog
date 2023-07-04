@@ -66,6 +66,10 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     activityRow.appendChild(removeButton);
+    activityRow.appendChild(document.createElement("br"));
+    activityRow.appendChild(document.createElement("br"));
+    activityRow.appendChild(document.createElement("br"));
+
   }
 
   // fonction de création d'une activité et ses emails templates
