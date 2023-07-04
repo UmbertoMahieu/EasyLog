@@ -12,32 +12,32 @@ function execute(selector, error, callback){
     }
 }
     
-function call(){
-    return execute(".fa-phone", "no phone number found", el => el.click())
-}
+// function call(){
+//     return execute(".fa-phone", "no phone number found", el => el.click())
+// }
 
-function hang_up(){
-    return execute('[aria-label="End Call"]', "hang_up Failed", el => el.click())
-}
+// function hang_up(){
+//     return execute('[aria-label="End Call"]', "hang_up Failed", el => el.click())
+// }
     
 function open_mark_as_done(){
-    return execute(".o_ActivityView_markDoneButton", "no activity found", el => el.click())
+    return execute(".o-mail-Activity-markDone", "no activity found", el => el.click())
 }
 
 function write_acti_record(acti_record){
-    return execute(".o_ActivityMarkDonePopoverContentView_feedback", "Activity Feedback Failed", el => el.value = acti_record)
+    return execute(".form-control", "Activity Feedback Failed", el => el.value = acti_record)
 }
     
 function mark_as_done(){
-    return execute(".o_ActivityMarkDonePopoverContentView_doneButton", "Activity MarkAsDone Failed", el => el.click())
+    return execute("[aria-label='Done']", "Activity MarkAsDone Failed", el => el.click())
 }
 
 function open_next_activity(){
-    return execute(".o_ChatterTopbar_buttonScheduleActivity", "Open Next Activity Failed", el => el.click())
+    return execute("[data-hotkey='shift+a']", "Open Next Activity Failed", el => el.click())
 }
 
 function get_current_acti(){
-    let activitySelector = document.querySelector(".o_ActivityView_summary")
+    let activitySelector = document.querySelector(".o-mail-Activity-info .text-break")
     if(activitySelector !== null){
         let cleaned_current_acti = activitySelector.textContent.replace(/”|“/g, '');
         let current = activities.find(activity => activity.name == cleaned_current_acti)
@@ -67,7 +67,7 @@ function init_extract_Apps(){
 }
 
 function extract_Apps() {
-    var log = document.querySelector("#description p").textContent;
+    var log = document.querySelector("#description_0 p").textContent;
     if(log !== ''){
         try{
             var matches = log.match(/\*\*app:\s+(.+)/)[1]
@@ -93,12 +93,16 @@ function website_check(apps){
 }
 
 function init_open_mailbox(){
-    return execute(".o_ChatterTopbar_buttonSendMessage", "initiation failed", el => {
-        let open_mail = document.querySelector(".o_ComposerView_button");
+    console.log("test");
+    execute(".o-mail-Chatter-sendMessage", "initiation failed", el => {
+        console.log("test2")
+        let open_mail = document.querySelector("[aria-label='Full composer']");
         if (open_mail===null){
+            console.log("test3")
             el.click();
         }
     })
+    return true;
 }
 
 function init_getLanguage(){
@@ -159,7 +163,7 @@ function is_last_activity(){
 }
 
 function next_opp(){
-    return execute(".o_pager_next", "Coudn't get to next opp", el => el.click())
+    return execute("[aria-label='Next']", "Coudn't get to next opp", el => el.click())
 }
 
 function formatDate() {
@@ -229,12 +233,12 @@ var initialization = {
             //     console.log("makeCall Macro Initiated")
             //     engine.activate(makeCall) 
             // } 
-            if (document.querySelector("#email_from").value !== "" && document.querySelector(".o_ActivityView_core") !== null){ 
+            if (document.querySelector("#email_from_0").value !== "" && document.querySelector(".o-mail-Activity") !== null){ 
                 console.log("makeCall Macro Failed")
                 console.log("sendEmail Macro Initiated")
                 engine.activate(sendEmail)
             }
-            else if (document.querySelector(".o_ActivityView_core") !== null){ 
+            else if (document.querySelector(".o-mail-Activity") !== null){ 
                 console.log("makeCall Macro Failed")
                 console.log("sendEmail Macro Failed")
                 console.log("activityManager Macro Initiated")
@@ -263,7 +267,7 @@ var makeCall = {
         },
         { 
             action: () => { 
-                if (document.querySelector("#email_from").value !== "" && document.querySelector(".o_ActivityView_core") !== null) { 
+                if (document.querySelector("#email_from_0").value !== "" && document.querySelector(".o-mail-Activity") !== null) { 
                     console.log("sendEmail Macro Follow-Up") 
                     engine.activate(sendEmail)
                 } 
@@ -280,28 +284,38 @@ var sendEmail = {
     steps: [
         {
             // Make sure we can read the language
-            action: () => init_getLanguage()
+            //action: () => init_getLanguage()
+            action:() => {
+                document.querySelector('[name ="lead"]').click();
+            }
         }, 
         {
-            trigger: "#lang_id_1", 
-            action: () => init_open_mailbox()
+            // trigger: "#lang_id_1",
+            //action: () => init_open_mailbox()
+            action: () => {
+                let send_email_but = document.querySelector(".o-mail-Chatter-sendMessage")
+                let open_mail = document.querySelector("[aria-label='Full composer']");
+                if (open_mail===null){
+                    send_email_but.click();
+                }
+            }
         },
         {
             // Open the mail box
-            trigger: ".o_ComposerView_buttonFullComposer", 
+            trigger: "[aria-label='Full composer']", 
             action: "click"
         },
         {
             // Insert the email template that need to be send
-            trigger: '#template_id',
+            trigger: '#template_id_0',
             action: () => {
-                document.querySelector('#template_id').value = get_email_to_send();
-                document.querySelector('#template_id').click()
+                document.querySelector('#template_id_0').value = get_email_to_send();
+                document.querySelector('#template_id_0').click()
             }
         },
         {
             // Validate the email template
-            trigger: "#template_id+ul>li>a",
+            trigger: "#template_id_0+ul>li>a",
             action: "click"
         },
         // {
@@ -316,7 +330,7 @@ var sendEmail = {
         },
         { 
             action: () => engine.activate(activityManager)
-        } 
+        },
     ]  
 }
 
@@ -326,16 +340,25 @@ var activityManager = {
     steps: [
         {
             // Open activity report window 
-            action: () => open_mark_as_done()
+            // action: () => open_mark_as_done()
+            action: () => {
+                document.querySelector(".o-mail-Activity-markDone").click()
+            }
         },
         {
             // Add the basic "No Answer" report following an unreached call
-            trigger: ".o_ActivityMarkDonePopoverContentView_feedback",
-            action: () => write_acti_record(record_acti)
+            trigger: ".form-control",
+            // action: () => write_acti_record(record_acti)
+            action: () => {
+                document.querySelector(".form-control").value = record_acti
+            }
         },
         {
             // Validate the report
-            action: () => mark_as_done()
+            //action: () => mark_as_done()
+            action: () => {
+                document.querySelector("[aria-label='Done']").click()
+            }
         },
         { 
             action: () => { 
@@ -357,32 +380,35 @@ var setFirstActivity = {
     steps: [
         {
             // Planify Next Activity. Simply open the window
-            action: () => open_next_activity()
+            // action: () => open_next_activity()
+            action: () => {
+                document.querySelector("[data-hotkey='shift+a']").click()
+            }
         },
         {
             // Insert Activity Type
-            trigger: '#activity_type_id',
+            trigger: '#activity_type_id_0',
             action: "text", value: department_acti
         },
         {
             // Validate activity Type
-            trigger: "#activity_type_id+ul>li>a",
+            trigger: "#activity_type_id_0+ul>li>a",
             action: "click"
         },
         {
             // Planify next activity deadline
-            trigger: '#date_deadline',
+            trigger: '#date_deadline_0',
             action: () => setTimeout(() => {
-                document.querySelector(".modal-content #date_deadline").value = next_date;
-                document.querySelector(".modal-content #date_deadline").dispatchEvent(new Event("change"))
+                document.querySelector(".modal-content #date_deadline_0").value = next_date;
+                document.querySelector(".modal-content #date_deadline_0").dispatchEvent(new Event("change"))
             },800)
         },  
         {
             // Insert Activity Summary
-            trigger: ".o_input",
+            trigger: "#summary_0",
             //$("#activity_type_id:propValue('demo2')")
             action: () => setTimeout(() => {
-                document.querySelector('#summary').value = activities[0].name;
+                document.querySelector('#summary_0').value = activities[0].name;
                 }, 1000)
         },
         {
@@ -400,46 +426,53 @@ var setFirstActivity = {
     ]  
 }
 
+
 var activityPlanifier = { 
     name: "activityPlanifier", 
     steps: [
         {
             // Planify Next Activity. Simply open the window
-            action: () => init_extract_Apps()
+            // action: () => init_extract_Apps()
+            action: () => {
+                document.querySelector('[name ="internal_notes"]').click()
+            }
         },
         {
             // Planify Next Activity. Simply open the window
-            action: () => open_next_activity()
+            // action: () => open_next_activity()
+            action: () => {
+                document.querySelector("[data-hotkey='shift+a']").click()
+            }
         },
         {
             // Insert Activity Type
-            trigger: '#activity_type_id',
+            trigger: '#activity_type_id_0',
             action: "text", value: department_acti
         },
         {
             // Validate activity Type
-            trigger: "#activity_type_id+ul>li>a",
+            trigger: "#activity_type_id_0+ul>li>a",
             action: "click"
         },
         {
             // Planify next activity deadline
-            trigger: '#date_deadline',
+            trigger: '#date_deadline_0',
             action: () => setTimeout(() => {
-                document.querySelector(".modal-content #date_deadline").value = next_date
-                document.querySelector(".modal-content #date_deadline").dispatchEvent(new Event("change"))
+                document.querySelector(".modal-content #date_deadline_0").value = next_date
+                document.querySelector(".modal-content #date_deadline_0").dispatchEvent(new Event("change"))
                 },800)
         }, 
         {
             // Insert Activity Summary
-            trigger: ".o_input",
+            trigger: "#summary_0",
             action: () => setTimeout(() => {
-                document.querySelector('#summary').value = set_next_activity(current_acti);
+                document.querySelector('#summary_0').value = set_next_activity(current_acti);
                 }, 1000)
         },
         {
             // Validate next Activity
             action: () => setTimeout(() => {
-                    document.querySelector('[name="action_close_dialog"]').click();
+                    document.querySelector('#mail_activity_save').click();
                 }, 1500)
         }, 
         {
@@ -478,23 +511,33 @@ var lostOpp = {
     ]  
 }
 
-// var testing = { 
-//     name: "testing", 
-//     steps: [
-//         {
-//             // Launch the call
-//             action: () => console.log("test1")
-//         }, 
-//         {
-//             trigger: () => {
-//                 console.log(document.querySelector(".modal-header") == null ? document.querySelector('body') : "1" );
-//                 return document.querySelector(".modal-header") == null ? document.querySelector('body') : null },
-//         },
-//         {
-//             // go to Next Opp
-//             action: () => console.log("test2")
-//         },
-//     ]  
-// }
+var testing = { 
+    name: "testing", 
+    steps: [
+        {
+            // Launch the call
+            action: () => console.log("testmacro1")
+        }, 
+        {
+            trigger: () => {
+                console.log(document.querySelector(".modal-header") == null ? document.querySelector('body') : "1" );
+                return document.querySelector(".modal-header") == null ? document.querySelector('body') : null },
+        },
+        {
+            // go to Next Opp
+            action: () => {
+                    let send_email_but = document.querySelector(".o-mail-Chatter-sendMessage")
+                    let open_mail = document.querySelector("[aria-label='Full composer']");
+                    if (open_mail===null){
+                        send_email_but.click();
+                    }
 
-engine.activate(initialization);
+            }
+        },
+        {
+            action: () => console.log("testmacro2")
+        },
+    ]  
+}
+
+engine.activate(activityManager);
