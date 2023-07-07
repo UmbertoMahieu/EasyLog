@@ -515,29 +515,15 @@ var testing = {
     name: "testing", 
     steps: [
         {
-            // Launch the call
-            action: () => console.log("testmacro1")
+            action: () => console.log("start")
+        },
+        {
+            action: () => init_open_mailbox()
         }, 
         {
-            trigger: () => {
-                console.log(document.querySelector(".modal-header") == null ? document.querySelector('body') : "1" );
-                return document.querySelector(".modal-header") == null ? document.querySelector('body') : null },
-        },
-        {
-            // go to Next Opp
-            action: () => {
-                    let send_email_but = document.querySelector(".o-mail-Chatter-sendMessage")
-                    let open_mail = document.querySelector("[aria-label='Full composer']");
-                    if (open_mail===null){
-                        send_email_but.click();
-                    }
-
-            }
-        },
-        {
-            action: () => console.log("testmacro2")
-        },
+            action: () => console.log("finish")
+        }
     ]  
 }
 
-engine.activate(activityManager);
+engine.activate(testing);
