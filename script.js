@@ -12,14 +12,6 @@ function execute(selector, error, callback){
     }
 }
     
-// function call(){
-//     return execute(".fa-phone", "no phone number found", el => el.click())
-// }
-
-// function hang_up(){
-//     return execute('[aria-label="End Call"]', "hang_up Failed", el => el.click())
-// }
-    
 function open_mark_as_done(){
     return execute(".o-mail-Activity-markDone", "no activity found", el => el.click())
 }
@@ -56,9 +48,9 @@ function set_next_activity(current_acti){
     let apps = extract_Apps();
     let current_acti_id = activities.findIndex(activity => activity == current_acti);
     let activity_to_add = 1
-    if(website_check(apps)){
-        activity_to_add = 2
-    }
+    // if(website_check(apps)){
+    //     activity_to_add = 1
+    // }
     return activities[current_acti_id + activity_to_add].name
 }
 
@@ -102,7 +94,6 @@ function init_open_mailbox(){
             el.click();
         }
     })
-    return true;
 }
 
 function init_getLanguage(){
@@ -113,6 +104,7 @@ function getLanguage(){
     let language = ""
     execute("#lang_id_1", "Language not found", el => {language = el.value})
     language = language.split(" ")[0]
+    console.log(language)
     return language;
 }
 
@@ -180,35 +172,6 @@ var engine = new macro.MacroEngine();
 
 var record_acti = "na";
 var department_acti = "DS - Call"
-// var activities = [
-//     {
-//         "name": "Call 1",
-//         "French": "UMBM 1Mail (FR)",
-//         "English": "UMBM 1Mail (EN)"
-//     },
-//     {
-//         "name": "Call 2",
-//         "French": "UMBM 2Mail (FR)",
-//         "English": "UMBM 2Mail (EN)"
-//     },
-//     {
-//         "name": "Call 3",
-//         "French": "UMBM 3Mail (FR)",
-//         "English": "UMBM 3Mail (EN)"
-//     },
-//     {
-//         "name": "Call 4",
-//         "French": "UMBM 4Mail (FR)",
-//         "English": "UMBM 4Mail (EN)"
-//     },
-//     {
-//         "name": "Call 5",
-//         "French": "UMBM 5Mail (FR)",
-//         "English": "UMBM 5Mail (EN)"
-//     }
-// ]
-
-
 
 var activitiesList = JSON.parse(document.getElementById("Dre").innerText).data;
 var activities = Array.from(Object.values(activitiesList));
@@ -221,7 +184,6 @@ var isLastActivity = is_last_activity();
 // var apps = extract_Apps();
 
 
-
 // Macro
 
 var initialization = { 
@@ -229,10 +191,6 @@ var initialization = {
     steps: [{ 
         action: () => 
             { 
-            // if (document.querySelector("#phone").value !== "") { 
-            //     console.log("makeCall Macro Initiated")
-            //     engine.activate(makeCall) 
-            // } 
             if (document.querySelector("#email_from_0").value !== "" && document.querySelector(".o-mail-Activity") !== null){ 
                 console.log("makeCall Macro Failed")
                 console.log("sendEmail Macro Initiated")
@@ -318,11 +276,6 @@ var sendEmail = {
             trigger: "#template_id_0+ul>li>a",
             action: "click"
         },
-        // {
-        //     // Send the mail
-        //     trigger: '[name="action_send_mail"]',
-        //     action: "click"
-        // },
         {
             trigger: () => {
                 return document.querySelector(".modal-header") == null ? document.querySelector('body') : null 
@@ -347,10 +300,10 @@ var activityManager = {
         },
         {
             // Add the basic "No Answer" report following an unreached call
-            trigger: ".form-control",
+            trigger: ".o_popover",
             // action: () => write_acti_record(record_acti)
             action: () => {
-                document.querySelector(".form-control").value = record_acti
+                document.querySelector(".o_popover .form-control").value = record_acti
             }
         },
         {
@@ -398,31 +351,39 @@ var setFirstActivity = {
         {
             // Planify next activity deadline
             trigger: '#date_deadline_0',
-            action: () => setTimeout(() => {
-                document.querySelector(".modal-content #date_deadline_0").value = next_date;
-                document.querySelector(".modal-content #date_deadline_0").dispatchEvent(new Event("change"))
-            },800)
+            action: () => {
+                setTimeout(() => {
+                    document.querySelector(".modal-content #date_deadline_0").value = next_date;
+                    document.querySelector(".modal-content #date_deadline_0").dispatchEvent(new Event("change"))
+                },800)
+            }
         },  
         {
             // Insert Activity Summary
             trigger: "#summary_0",
             //$("#activity_type_id:propValue('demo2')")
-            action: () => setTimeout(() => {
-                document.querySelector('#summary_0').value = activities[0].name;
+            action: () => {
+                setTimeout(() => {
+                    document.querySelector('#summary_0').value = activities[0].name;
                 }, 1000)
+            }
         },
         {
             // Validate next Activity
-            action: () => setTimeout(() => {
+            action: () => {
+                setTimeout(() => {
                     document.querySelector('#mail_activity_save').click();
                 }, 1500)
+            }
         },
         {
             // Validate next Activity
-            action: () => setTimeout(() => {
+            action: () => { 
+                setTimeout(() => {
                     engine.activate(sendEmail)
                 }, 2000)
-        },
+            },
+        }
     ]  
 }
 
@@ -457,29 +418,37 @@ var activityPlanifier = {
         {
             // Planify next activity deadline
             trigger: '#date_deadline_0',
-            action: () => setTimeout(() => {
-                document.querySelector(".modal-content #date_deadline_0").value = next_date
-                document.querySelector(".modal-content #date_deadline_0").dispatchEvent(new Event("change"))
+            action: () => {
+                setTimeout(() => {
+                    document.querySelector(".modal-content #date_deadline_0").value = next_date;
+                    document.querySelector(".modal-content #date_deadline_0").dispatchEvent(new Event("change"))
                 },800)
+            }
         }, 
         {
             // Insert Activity Summary
             trigger: "#summary_0",
-            action: () => setTimeout(() => {
-                document.querySelector('#summary_0').value = set_next_activity(current_acti);
+            action: () => { 
+                setTimeout(() => {
+                    document.querySelector('#summary_0').value = set_next_activity(current_acti);
                 }, 1000)
+            }
         },
         {
             // Validate next Activity
-            action: () => setTimeout(() => {
+            action: () => { 
+                setTimeout(() => {
                     document.querySelector('#mail_activity_save').click();
                 }, 1500)
+            }
         }, 
         {
              // go to Next Opp
-             action: () => setTimeout(() => {
+             action: () => {
+                setTimeout(() => {
                      next_opp()
                 }, 2000)
+            }
         }
     ]  
 }
@@ -492,12 +461,12 @@ var lostOpp = {
             action: () => {document.querySelector('button[data-hotkey="l"]').click()}
         }, 
         {
-            trigger: '.modal-content #lost_reason_id',
+            trigger: '.modal-content #lost_reason_id_0',
             action: "text", value: "No answer, not reached"
         },
         {
             // Validate activity Type
-            trigger: ".modal-content #lost_reason_id+ul>li>a",
+            trigger: ".modal-content #lost_reason_id_0+ul>li>a",
             action: "click"
         },
         {
@@ -526,4 +495,4 @@ var testing = {
     ]  
 }
 
-engine.activate(testing);
+engine.activate(initialization);
