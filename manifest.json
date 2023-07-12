@@ -24,7 +24,7 @@
       "default_title": "Sales dashboard"
     },
     "web_accessible_resources": [{
-      "resources": ["script.js"], 
+      "resources": ["script.js", "buttonScript.js" ], 
       "matches": ["https://*.odoo.com/*"]
     }]
   }
