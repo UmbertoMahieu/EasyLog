@@ -11,22 +11,6 @@ function execute(selector, error, callback){
         return false;
     }
 }
-    
-function open_mark_as_done(){
-    return execute(".o-mail-Activity-markDone", "no activity found", el => el.click())
-}
-
-function write_acti_record(acti_record){
-    return execute(".form-control", "Activity Feedback Failed", el => el.value = acti_record)
-}
-    
-function mark_as_done(){
-    return execute("[aria-label='Done']", "Activity MarkAsDone Failed", el => el.click())
-}
-
-function open_next_activity(){
-    return execute("[data-hotkey='shift+a']", "Open Next Activity Failed", el => el.click())
-}
 
 function get_current_acti(){
     let activitySelector = document.querySelector(".o-mail-Activity-info .text-break")
@@ -48,14 +32,7 @@ function set_next_activity(current_acti){
     let apps = extract_Apps();
     let current_acti_id = activities.findIndex(activity => activity == current_acti);
     let activity_to_add = 1
-    // if(website_check(apps)){
-    //     activity_to_add = 1
-    // }
     return activities[current_acti_id + activity_to_add].name
-}
-
-function init_extract_Apps(){
-    return execute('[name ="internal_notes"]', "Coudn't reach Internal note Tab", el => el.click());
 }
 
 function extract_Apps() {
@@ -74,16 +51,6 @@ function extract_Apps() {
     return null
 }
 
-function website_check(apps){
-    if(apps == null){
-        return false;
-    }
-    if(apps.length === 1 && (apps[0] === "website_sale" || apps[0] === "website")){
-        return true
-    }
-    return false;
-}
-
 function init_open_mailbox(){
     console.log("test");
     execute(".o-mail-Chatter-sendMessage", "initiation failed", el => {
@@ -94,10 +61,6 @@ function init_open_mailbox(){
             el.click();
         }
     })
-}
-
-function init_getLanguage(){
-    return execute('[name ="lead"]', "Coudn't reach Extra Info Tab", el => el.click())
 }
 
 function getLanguage(){
@@ -113,49 +76,12 @@ function get_email_to_send(){
     return current_acti[language]
 }
 
-function getDate() {
-    const today = new Date();
-    let daysToAdd = 2;
-
-    if (today.getDay() === 5) {
-    daysToAdd = 7;
-    }
-
-    if (today.getDay() === 4) {
-        daysToAdd = 6;
-        }
-
-    const futureDate = new Date(today.getTime() + (daysToAdd * 24 * 60 * 60 * 1000));
-
-    if (futureDate.getDay() === 6) {
-    futureDate.setDate(futureDate.getDate() + 2);
-    }
-    if (futureDate.getDay() === 0) {
-    futureDate.setDate(futureDate.getDate() + 1);
-    }
-
-    const day = futureDate.getDate().toString().padStart(2, '0');
-    const month = (futureDate.getMonth() + 1).toString().padStart(2, '0');
-    const year = futureDate.getFullYear().toString();
-
-    return `${month}/${day}/${year}`;
-}
-    
-function extractAppIdFromConsoleLog(logText) {
-    const matches = logText.match(/\*\*app:\s+(\w+)/);
-    return matches ? matches[1] : null;
-}
-
 function is_last_activity(){
     if(_.isEqual(current_acti, activities[activities.length - 1]))
     {
         return true
     }
     return false;
-}
-
-function next_opp(){
-    return execute("[aria-label='Next']", "Coudn't get to next opp", el => el.click())
 }
 
 function formatDate() {
@@ -175,7 +101,6 @@ var department_acti = "DS - Call"
 
 var activitiesList = JSON.parse(document.getElementById("Dre").innerText).data;
 var activities = Array.from(Object.values(activitiesList));
-console.log(activities);
 
 // Activity variables
 var next_date = formatDate();
@@ -185,7 +110,6 @@ var isLastActivity = is_last_activity();
 
 
 // Macro
-
 var initialization = { 
     name: "Initialization", 
     steps: [{ 
@@ -241,8 +165,7 @@ var sendEmail = {
     name: "sendEmail", 
     steps: [
         {
-            // Make sure we can read the language
-            //action: () => init_getLanguage()
+            // Reach Language Page
             action:() => {
                 document.querySelector('[name ="lead"]').click();
             }
@@ -293,7 +216,6 @@ var activityManager = {
     steps: [
         {
             // Open activity report window 
-            // action: () => open_mark_as_done()
             action: () => {
                 document.querySelector(".o-mail-Activity-markDone").click()
             }
@@ -301,14 +223,12 @@ var activityManager = {
         {
             // Add the basic "No Answer" report following an unreached call
             trigger: ".o_popover",
-            // action: () => write_acti_record(record_acti)
             action: () => {
                 document.querySelector(".o_popover .form-control").value = record_acti
             }
         },
         {
             // Validate the report
-            //action: () => mark_as_done()
             action: () => {
                 document.querySelector("[aria-label='Done']").click()
             }
@@ -333,7 +253,6 @@ var setFirstActivity = {
     steps: [
         {
             // Planify Next Activity. Simply open the window
-            // action: () => open_next_activity()
             action: () => {
                 document.querySelector("[data-hotkey='shift+a']").click()
             }
@@ -393,14 +312,12 @@ var activityPlanifier = {
     steps: [
         {
             // Planify Next Activity. Simply open the window
-            // action: () => init_extract_Apps()
             action: () => {
                 document.querySelector('[name ="internal_notes"]').click()
             }
         },
         {
             // Planify Next Activity. Simply open the window
-            // action: () => open_next_activity()
             action: () => {
                 document.querySelector("[data-hotkey='shift+a']").click()
             }
@@ -446,7 +363,8 @@ var activityPlanifier = {
              // go to Next Opp
              action: () => {
                 setTimeout(() => {
-                     next_opp()
+                    //  next_opp()
+                    document.querySelector('[aria-label="Next"]').click();
                 }, 2000)
             }
         }
@@ -475,24 +393,27 @@ var lostOpp = {
         },
         {
             // go to Next Opp
-            action: () => next_opp()
+            action: () => {
+                // next_opp()
+                document.querySelector('[aria-label="Next"]').click();
+            }
         }
     ]  
 }
 
-var testing = { 
-    name: "testing", 
-    steps: [
-        {
-            action: () => console.log("start")
-        },
-        {
-            action: () => init_open_mailbox()
-        }, 
-        {
-            action: () => console.log("finish")
-        }
-    ]  
-}
+// var testing = { 
+//     name: "testing", 
+//     steps: [
+//         {
+//             action: () => console.log("start")
+//         },
+//         {
+//             action: () => init_open_mailbox()
+//         }, 
+//         {
+//             action: () => console.log("finish")
+//         }
+//     ]  
+// }
 
 engine.activate(initialization);

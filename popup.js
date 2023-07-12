@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
       activities.push(activity);
     });
-    // console.log(activities); // Output the array of activities
+   // Output the array of activities
 
     chrome.runtime.sendMessage({event : "clicked", activities});
   });
@@ -153,14 +153,10 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log(activities[0]);
 
     Object.values(activities[0]).forEach(activity => {
-      // Object.keys(val).forEach(key => {
-      //   console.log(key, val[key]);
-      // })
       generateActivityField(activity);
       console.log(activity);
     })
 
-      // console.log(activity);
 
 
 

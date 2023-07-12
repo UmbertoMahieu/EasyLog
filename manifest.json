@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "CallThemAllStagging16.3",
-    "version": "1.0",
+    "name": "EasyLog",
+    "version": "0.0.1",
     "description": "Won't make you on target, but atleast your pipe will be green",
     "background": {
       "service_worker": "background.js" 
@@ -18,9 +18,12 @@
             "js": ["contentScript.js"]
         }
     ],
+    "icons": {
+      "128": "icon128.png"
+    },
     "action": {
       "default_popup": "popup.html",
-      "default_icon": "icon.png",
+      "default_icon": "icon128.png",
       "default_title": "Sales dashboard"
     },
     "web_accessible_resources": [{

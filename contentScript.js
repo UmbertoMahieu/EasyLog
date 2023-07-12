@@ -1,12 +1,18 @@
-
-
 // Listen to backgroundPage XHR Hookup to create button and datefield inside page
 chrome.runtime.onMessage.addListener(function (msg){
 	if(msg.message == "data" && document.getElementsByName("send_email_button").length == 0){
+        if(document.querySelector('[data-tooltip="Mark as lost"]') != null){
 			addButton();
             addDateField();
-		}
-	});
+        }
+        else{
+            setTimeout(() => {
+                addButton();
+                addDateField();
+            }, 1000)
+        }
+    }
+});
 
 function addDateField() {
     // Create the input field
@@ -68,6 +74,9 @@ async function injectScript(){
 
         (document.head || document.documentElement).appendChild(s);
     }
+
+
+
 
 
     
