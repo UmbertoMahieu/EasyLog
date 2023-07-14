@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "EasyLog",
     "version": "0.0.1",
-    "description": "Won't make you on target, but atleast your pipe will be green",
+    "description": "Extension to automate activity log in Odoo CRM",
     "background": {
       "service_worker": "background.js" 
     },

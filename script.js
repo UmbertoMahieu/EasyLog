@@ -21,11 +21,13 @@ function get_current_acti(){
             return current;
         }
         else{
-            alert("Activity does not match any record in activities")
+            alert("Activity does not match any record in your activities")
             return false;
         }
     }
-    return activities[0];
+    if (activities){
+        return activities[0];
+    }
 }
 
 function set_next_activity(current_acti){
@@ -77,9 +79,12 @@ function get_email_to_send(){
 }
 
 function is_last_activity(){
-    if(_.isEqual(current_acti, activities[activities.length - 1]))
-    {
-        return true
+    if (activities){
+        if(_.isEqual(current_acti, activities[activities.length - 1]))
+        {
+            return true
+        }
+        return false;
     }
     return false;
 }
@@ -100,7 +105,12 @@ var record_acti = "na";
 var department_acti = "DS - Call"
 
 var activitiesList = JSON.parse(document.getElementById("Dre").innerText).data;
-var activities = Array.from(Object.values(activitiesList));
+if (activitiesList !== undefined){
+    var activities = Array.from(Object.values(activitiesList));
+}
+else{
+    alert("Vous devez d'abord configurer votre sales process")
+}
 
 // Activity variables
 var next_date = formatDate();
@@ -115,7 +125,10 @@ var initialization = {
     steps: [{ 
         action: () => 
             { 
-            if (document.querySelector("#email_from_0").value !== "" && document.querySelector(".o-mail-Activity") !== null){ 
+            if (activitiesList == undefined){
+                console.log("No sales process")
+            }
+            else if (document.querySelector("#email_from_0").value !== "" && document.querySelector(".o-mail-Activity") !== null){ 
                 console.log("makeCall Macro Failed")
                 console.log("sendEmail Macro Initiated")
                 engine.activate(sendEmail)
