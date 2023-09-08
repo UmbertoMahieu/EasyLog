@@ -21,7 +21,7 @@ function get_current_acti(){
             return current;
         }
         else{
-            alert("Activity does not match any record in your activities")
+            alert("Activity does not match any record in your sales process")
             return false;
         }
     }
@@ -51,18 +51,6 @@ function extract_Apps() {
         }
     }
     return null
-}
-
-function init_open_mailbox(){
-    console.log("test");
-    execute(".o-mail-Chatter-sendMessage", "initiation failed", el => {
-        console.log("test2")
-        let open_mail = document.querySelector("[aria-label='Full composer']");
-        if (open_mail===null){
-            console.log("test3")
-            el.click();
-        }
-    })
 }
 
 function getLanguage(){
@@ -128,7 +116,7 @@ var initialization = {
             if (activitiesList == undefined){
                 console.log("No sales process")
             }
-            else if (document.querySelector("#email_from_0").value !== "" && document.querySelector(".o-mail-Activity") !== null){ 
+            else if (document.querySelector("#email_from_0").value !== "" && document.querySelector(".o-mail-Activity") !== null && Object.values(current_acti)[1] !== '' && Object.values(current_acti)[0] !== ''){ 
                 console.log("makeCall Macro Failed")
                 console.log("sendEmail Macro Initiated")
                 engine.activate(sendEmail)
@@ -184,8 +172,6 @@ var sendEmail = {
             }
         }, 
         {
-            // trigger: "#lang_id_1",
-            //action: () => init_open_mailbox()
             action: () => {
                 let send_email_but = document.querySelector(".o-mail-Chatter-sendMessage")
                 let open_mail = document.querySelector("[aria-label='Full composer']");
@@ -233,15 +219,16 @@ var activityManager = {
                 document.querySelector(".o-mail-Activity-markDone").click()
             }
         },
-        {
-            // Add the basic "No Answer" report following an unreached call
-            trigger: ".o_popover",
-            action: () => {
-                document.querySelector(".o_popover .form-control").value = record_acti
-            }
-        },
+        // {
+        //     // Add the basic "No Answer" report following an unreached call
+        //     trigger: ".o_popover",
+        //     action: () => {
+        //         document.querySelector(".o_popover .form-control").value = record_acti
+        //     }
+        // },
         {
             // Validate the report
+            trigger: "[aria-label='Done']",
             action: () => {
                 document.querySelector("[aria-label='Done']").click()
             }
@@ -413,20 +400,5 @@ var lostOpp = {
         }
     ]  
 }
-
-// var testing = { 
-//     name: "testing", 
-//     steps: [
-//         {
-//             action: () => console.log("start")
-//         },
-//         {
-//             action: () => init_open_mailbox()
-//         }, 
-//         {
-//             action: () => console.log("finish")
-//         }
-//     ]  
-// }
 
 engine.activate(initialization);

@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var activityNameLabel = document.createElement("label");
     activityNameLabel.setAttribute("for", "activity-name");
-    activityNameLabel.textContent = "Activity Name :";
+    activityNameLabel.textContent = "Activity Summary :";
 
     var activityNameInput = document.createElement("input");
     activityNameInput.setAttribute("type", "text");
