@@ -77,7 +77,3 @@ async function injectScript(){
 
 
 
-
-
-    
-    
